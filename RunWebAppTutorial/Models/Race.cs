@@ -26,4 +26,4 @@ namespace RunWebAppTutorial.Models
         public AppUser? AppUser { get; set; }
     }
 }
-}
+
