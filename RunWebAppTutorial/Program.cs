@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RunWebAppTutorial.Data;
+using RunWebAppTutorial.Interfaces;
+using RunWebAppTutorial.Repository;
 
 namespace RunWebAppTutorial
 {
@@ -11,6 +13,8 @@ namespace RunWebAppTutorial
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IClubRepository, ClubRepository>();
+            builder.Services.AddScoped<IRaceRepository, RaceRepository>();
             builder.Services.AddDbContext<ApplicationDBContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
