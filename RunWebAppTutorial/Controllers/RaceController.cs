@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using RunWebAppTutorial.Data;
 using RunWebAppTutorial.Interfaces;
@@ -23,6 +24,23 @@ namespace RunWebAppTutorial.Controllers
         {
             Race club = await _raceRepository.GetById(id);
             return View(club);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Race race)
+        {
+            if(!ModelState.IsValid) 
+            {
+                return View(race);
+            }
+
+            _raceRepository.Add(race);
+            return RedirectToAction("Index");
         }
     }
 }
