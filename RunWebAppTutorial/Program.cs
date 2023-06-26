@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using RunWebAppTutorial.Data;
+using RunWebAppTutorial.Helpers;
 using RunWebAppTutorial.Interfaces;
 using RunWebAppTutorial.Repository;
+using RunWebAppTutorial.Services;
 
 namespace RunWebAppTutorial
 {
@@ -15,6 +17,8 @@ namespace RunWebAppTutorial
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IClubRepository, ClubRepository>();
             builder.Services.AddScoped<IRaceRepository, RaceRepository>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddDbContext<ApplicationDBContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
