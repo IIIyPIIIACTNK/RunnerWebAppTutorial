@@ -26,7 +26,7 @@ namespace RunWebAppTutorial.Controllers
 
         public async Task<IActionResult> Detail(int id)
         {
-            Club club= await _clubRepository.GetById(id);
+            Club club= await _clubRepository.GetByIdAsync(id);
             return View(club);
         }
 
@@ -58,6 +58,65 @@ namespace RunWebAppTutorial.Controllers
                 ModelState.AddModelError("", "Image upload failed");
             }
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var club = await _clubRepository.GetByIdAsync(id);
+            if(club == null) return View("Error");
+            var editViewModel = new EditClubViewModel()
+            {
+               Title = club.Title,
+               Description = club.Description,
+               Address = club.Address,
+               AddressId= club.AddressId,
+               URL = club.Image,
+               ClubCategory= club.ClubCategory,
+            };
+            return View(editViewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditClubViewModel clubViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit club");
+                return View("Edit", clubViewModel);
+            }
+
+            var userClub = await _clubRepository.GetByIdAsyncNoTraking(id);
+            if (userClub != null)
+            {
+                try
+                {
+                    await _photoService.DeleteImageAsync(userClub.Image);
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Failed to delete image");
+                    return View(clubViewModel);
+                }
+                var photoUploadResult = await _photoService.AddPhotoAsync(clubViewModel.Image);
+
+                var club = new Club()
+                {
+                    Id = id,
+                    Title = clubViewModel.Title,
+                    Description = clubViewModel.Description,
+                    Image = photoUploadResult.Url.ToString(),
+                    AddressId = clubViewModel.AddressId,
+                    Address = clubViewModel.Address
+                };
+
+                _clubRepository.Update(club);
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(clubViewModel);
+            }
         }
     }
 }

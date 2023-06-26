@@ -6,6 +6,7 @@ namespace RunWebAppTutorial.Interfaces
     {
         Task<IEnumerable<Race>> GetAll();
         Task<Race> GetById(int id);
+        Task<Race> GetByIdNoTraking(int id);
 
         Task<IEnumerable<Race>> GetRaceByCity(string city);
         bool Add(Race race);

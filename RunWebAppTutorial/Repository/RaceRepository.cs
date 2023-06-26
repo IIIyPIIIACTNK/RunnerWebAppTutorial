@@ -23,6 +23,10 @@ namespace RunWebAppTutorial.Repository
         {
             return await _context.Races.Include(i => i.Address).FirstOrDefaultAsync(r => r.Id == id);
         }
+        public async Task<Race> GetByIdNoTraking(int id)
+        {
+            return await _context.Races.Include(i => i.Address).AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+        }
 
         public async Task<IEnumerable<Race>> GetRaceByCity(string city)
         {

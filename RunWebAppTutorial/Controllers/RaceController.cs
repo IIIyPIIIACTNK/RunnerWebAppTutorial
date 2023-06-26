@@ -59,5 +59,65 @@ namespace RunWebAppTutorial.Controllers
             }
             return View(raceViewModel);
         }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var race =  await _raceRepository.GetById(id);
+            if(race == null) return View("Error");
+            var raceViewModel = new EditRaceViewModel()
+            {
+                Id = id,
+                Title = race.Title,
+                Description = race.Description,
+                Address = race.Address,
+                AddressId= race.AddressId,
+                RaceCategory = race.RaceCategory,
+                URL = race.Image
+            };
+            return View(raceViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id,EditRaceViewModel raceViewModel)
+        {
+            if(!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Falied to edit race");
+                return View(raceViewModel);
+            }
+            var userRace = await _raceRepository.GetByIdNoTraking(id);
+            if(userRace != null)
+            {
+                try
+                {
+                    await _photoService.DeleteImageAsync(userRace.Image);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Failed to delete image");
+                    return View(raceViewModel);
+                }
+
+                var photoUploadResult = await _photoService.AddPhotoAsync(raceViewModel.Image);
+
+                var race = new Race()
+                {
+                    Id = id,
+                    Title = raceViewModel.Title,
+                    Description = raceViewModel.Description,
+                    Address = raceViewModel.Address,
+                    AddressId = raceViewModel.AddressId,
+                    RaceCategory = raceViewModel.RaceCategory,
+                    Image = photoUploadResult.Url.ToString()
+                };
+                _raceRepository.Update(race);
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(raceViewModel);
+            }
+        } 
     }
 }
