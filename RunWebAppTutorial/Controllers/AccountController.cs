@@ -23,30 +23,75 @@ namespace RunWebAppTutorial.Controllers
             return View(response);
         }
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginVM)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
             if(!ModelState.IsValid) {
-                return View(loginVM);
+                return View(loginViewModel);
             }
 
-            var user = await _userManager.FindByEmailAsync(loginVM.EmailAddress);
+            var user = await _userManager.FindByEmailAsync(loginViewModel.EmailAddress);
 
             if(user != null){
 
-                var passwordCheck = await _userManager.CheckPasswordAsync(user,loginVM.Password);
+                var passwordCheck = await _userManager.CheckPasswordAsync(user,loginViewModel.Password);
                 if(passwordCheck) 
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user, loginVM.Password, false, false);
+                    var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("Index", "Race");
                     }
                     TempData["Error"] = "Wrong credetenrials. Try again";
-                    return View(loginVM);
+                    return View(loginViewModel);
                 }
             }
             TempData["Error"] = "Wrong credetenrials. Try again";
-            return View(loginVM);
+            return View(loginViewModel);
+        }
+
+        public IActionResult Register()
+        {
+            var response = new RegisterViewModel();
+            return View(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(registerViewModel);
+            }
+
+            var user = await _userManager.FindByEmailAsync(registerViewModel.EmailAddress);
+            if(user != null)
+            {
+                TempData["Error"] = "This Email is already registered";
+                return View(registerViewModel);
+            }
+
+            var newUser = new AppUser()
+            {
+                Email = registerViewModel.EmailAddress,
+                UserName = registerViewModel.EmailAddress,
+            };
+            var newUserResponce = await _userManager.CreateAsync(newUser,registerViewModel.Password);
+
+            if(newUserResponce.Succeeded) 
+            {
+                await _userManager.AddToRoleAsync(newUser, UserRoles.User);
+                return RedirectToAction("Index", "Race");
+            }
+
+            TempData["Error"] = newUserResponce.Errors.First().Description;
+            return View(registerViewModel);
+        }
+
+        [HttpPost] 
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index","Race");
         }
     }
 }

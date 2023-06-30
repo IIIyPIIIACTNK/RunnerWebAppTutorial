@@ -19,7 +19,7 @@ namespace RunWebAppTutorial.Repository
             return await _context.Races.ToListAsync();
         }
 
-        public async Task<Race> GetById(int id)
+        public async Task<Race> GetByIdAsync(int id)
         {
             return await _context.Races.Include(i => i.Address).FirstOrDefaultAsync(r => r.Id == id);
         }

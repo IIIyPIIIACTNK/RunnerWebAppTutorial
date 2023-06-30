@@ -23,7 +23,9 @@
                                     <a asp-controller="Club" asp-action="Detail" asp-route-id="@item.Id"
                                     type="button" class="btn btn-sm btn-outline-secondary">Details</a>
                                     <a asp-controller="Club" asp-action="Edit" asp-route-id="@item.Id" 
-                                    type="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    type="button" class="btn btn-sm btn-outline-secondary">Edit</a> 
+                                    <a asp-controller="Club" asp-action="Delete" asp-route-id="@item.Id" 
+                                    type="button" class="btn btn-sm btn-outline-secondary">Delete</a>
                                 </div>
                                 <small class="text-body-secondary">@item.ClubCategory</small>
                             </div>

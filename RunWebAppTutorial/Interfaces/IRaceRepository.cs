@@ -5,7 +5,7 @@ namespace RunWebAppTutorial.Interfaces
     public interface IRaceRepository
     {
         Task<IEnumerable<Race>> GetAll();
-        Task<Race> GetById(int id);
+        Task<Race> GetByIdAsync(int id);
         Task<Race> GetByIdNoTraking(int id);
 
         Task<IEnumerable<Race>> GetRaceByCity(string city);

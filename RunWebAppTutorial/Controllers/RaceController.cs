@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using RunWebAppTutorial.Data;
 using RunWebAppTutorial.Interfaces;
 using RunWebAppTutorial.Models;
+using RunWebAppTutorial.Repository;
 using RunWebAppTutorial.ViewModel;
+using System.Diagnostics;
 
 namespace RunWebAppTutorial.Controllers
 {
@@ -26,7 +28,7 @@ namespace RunWebAppTutorial.Controllers
 
         public async Task<IActionResult> Detail(int id)
         {
-            Race club = await _raceRepository.GetById(id);
+            Race club = await _raceRepository.GetByIdAsync(id);
             return View(club);
         }
 
@@ -62,7 +64,7 @@ namespace RunWebAppTutorial.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var race =  await _raceRepository.GetById(id);
+            var race =  await _raceRepository.GetByIdAsync(id);
             if(race == null) return View("Error");
             var raceViewModel = new EditRaceViewModel()
             {
@@ -118,6 +120,31 @@ namespace RunWebAppTutorial.Controllers
             {
                 return View(raceViewModel);
             }
-        } 
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var raceDetail = await _raceRepository.GetByIdAsync(id);
+            if (raceDetail == null) { return View("Error"); }
+            return View(raceDetail);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteClub(int id)
+        {
+            var raceDetail = await _raceRepository.GetByIdAsync(id);
+            if (raceDetail == null) { return View("Error"); }
+            try
+            {
+                await _photoService.DeleteImageAsync(raceDetail.Image);
+                Debug.WriteLine($"Cloudinary image delete code checked \nLink: {raceDetail.Image}");
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Failed to delete image");
+                return View(raceDetail);
+            }
+            _raceRepository.Delete(raceDetail);
+            return RedirectToAction("Index");
+        }
     }
 }

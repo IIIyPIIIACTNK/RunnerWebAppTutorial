@@ -5,6 +5,7 @@ using RunWebAppTutorial.Interfaces;
 using RunWebAppTutorial.Migrations;
 using RunWebAppTutorial.Models;
 using RunWebAppTutorial.ViewModel;
+using System.Diagnostics;
 
 namespace RunWebAppTutorial.Controllers
 {
@@ -117,6 +118,32 @@ namespace RunWebAppTutorial.Controllers
             {
                 return View(clubViewModel);
             }
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var clubDetail = await _clubRepository.GetByIdAsync(id);
+            if(clubDetail == null) { return View("Error"); }
+            return View(clubDetail);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteClub(int id)
+        {
+            var clubDetail = await _clubRepository.GetByIdAsync(id);
+            if(clubDetail == null) { return View("Error"); }
+            try
+            {
+                await _photoService.DeleteImageAsync(clubDetail.Image);
+                Debug.WriteLine($"Cloudinary image delete code checked \nLink: {clubDetail.Image}");
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Failed to delete image");
+                return View(clubDetail);
+            }
+            _clubRepository.Delete(clubDetail); 
+            return RedirectToAction("Index");
         }
     }
 }
