@@ -21,6 +21,7 @@ namespace RunWebAppTutorial
             builder.Services.AddScoped<IClubRepository, ClubRepository>();
             builder.Services.AddScoped<IRaceRepository, RaceRepository>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
+            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddDbContext<ApplicationDBContext>(options =>
             {
@@ -46,7 +47,7 @@ namespace RunWebAppTutorial
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

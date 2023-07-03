@@ -87,7 +87,7 @@ namespace RunWebAppTutorial.Controllers
             return View(registerViewModel);
         }
 
-        [HttpPost] 
+        [HttpGet] 
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
