@@ -35,7 +35,7 @@ namespace RunWebAppTutorial.Controllers
 
         public IActionResult Create()
         {
-            var currentUserId = _httpContextAccessor.HttpContext?.User.GetUserById();
+            var currentUserId = _httpContextAccessor.HttpContext?.User.GetUserId();
             var createViewModel = new CreateClubViewModel()
             {
                 AppUserId = currentUserId
